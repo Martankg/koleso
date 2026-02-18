@@ -56,6 +56,17 @@ input {
     transform-origin: 50% 50%;
 }
 
+.segment-text {
+    position: absolute;
+    top: 50%;
+    left: 85%;
+    transform-origin: center;
+    font-size: 13px;
+    font-weight: bold;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
 button {
     padding: 15px 50px;
     font-size: 18px;
@@ -78,13 +89,6 @@ button:disabled {
     border-right: 22px solid transparent;
     border-bottom: 45px solid gold;
     margin: auto;
-}
-
-#result {
-    margin-top: 25px;
-    font-size: 22px;
-    font-weight: bold;
-    min-height: 40px;
 }
 
 #winnerPopup {
@@ -119,7 +123,6 @@ button:disabled {
 
 <button id="spinBtn" onclick="spin()">Крутить</button>
 
-<div id="result"></div>
 <div id="winnerPopup"></div>
 
 <audio id="drumSound" src="https://www.soundjay.com/misc/sounds/drum-roll-1.mp3"></audio>
@@ -148,34 +151,27 @@ const colors = [
 
 const wheel = document.getElementById("wheel");
 const segmentAngle = 360 / prizes.length;
-const spinBtn = document.getElementById("spinBtn");
-const resultDiv = document.getElementById("result");
 const drumSound = document.getElementById("drumSound");
 
 prizes.forEach((prize, i) => {
 
     const segment = document.createElement("div");
     segment.className = "segment";
-    segment.style.position = "absolute";
-    segment.style.width = "100%";
-    segment.style.height = "100%";
-    segment.style.transformOrigin = "50% 50%";
     segment.style.transform = `rotate(${i * segmentAngle}deg)`;
     segment.style.clipPath = `polygon(50% 50%, 100% 0, 100% 100%)`;
     segment.style.background = colors[i];
 
     const text = document.createElement("div");
+    text.className = "segment-text";
     text.innerText = prize;
 
-    text.style.position = "absolute";
-    text.style.top = "50%";
-    text.style.left = "75%";   /* Двигаем ближе к краю */
-    text.style.transform = `rotate(${segmentAngle / 2}deg) translate(-50%, -50%)`;
-    text.style.transformOrigin = "left center";
-    text.style.fontSize = "13px";
-    text.style.fontWeight = "bold";
-    text.style.whiteSpace = "nowrap";
-    text.style.pointerEvents = "none";
+    // правильный угол текста
+    const textAngle = segmentAngle / 2;
+    text.style.transform = `
+        rotate(${textAngle}deg)
+        translate(-50%, -50%)
+        rotate(90deg)
+    `;
 
     segment.appendChild(text);
     wheel.appendChild(segment);
@@ -185,6 +181,7 @@ let currentRotation = 0;
 let hasSpun = false;
 
 function spin() {
+
     if (hasSpun) return;
 
     const name = document.getElementById("managerName").value;
@@ -194,12 +191,13 @@ function spin() {
     }
 
     hasSpun = true;
-    spinBtn.disabled = true;
+    document.getElementById("spinBtn").disabled = true;
 
     drumSound.play();
 
     const randomIndex = Math.floor(Math.random() * prizes.length);
     const extraSpins = 5;
+
     const finalAngle = (360 * extraSpins) +
         (360 - (randomIndex * segmentAngle) - segmentAngle / 2);
 
@@ -207,13 +205,11 @@ function spin() {
     wheel.style.transform = `rotate(${currentRotation}deg)`;
 
     setTimeout(() => {
+
         drumSound.pause();
 
-        const winText = name + " получает: " + prizes[randomIndex];
-        resultDiv.innerHTML = "🎉 " + winText;
-
         const popup = document.getElementById("winnerPopup");
-        popup.innerHTML = "🎉 " + winText;
+        popup.innerHTML = "🎉 " + name + " получает: " + prizes[randomIndex];
         popup.style.display = "block";
 
         confetti({
@@ -226,7 +222,7 @@ function spin() {
 }
 </script>
 
-
 </body>
 </html>
+
 
