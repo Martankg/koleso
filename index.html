@@ -20,12 +20,10 @@ body {
 
 .logo img {
     max-width: 280px;
-    height: auto;
 }
 
 h1 {
     margin-top: 15px;
-    font-size: 28px;
 }
 
 input {
@@ -37,34 +35,40 @@ input {
     text-align: center;
 }
 
-#wheel {
-    margin: 30px auto;
+#wheel-container {
+    position: relative;
     width: 520px;
     height: 520px;
-    border-radius: 50%;
-    border: 10px solid gold;
-    position: relative;
-    overflow: hidden;
-    transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
-    box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
+    margin: 30px auto;
 }
 
-.segment {
-    position: absolute;
+#wheel {
     width: 100%;
     height: 100%;
-    transform-origin: 50% 50%;
+    border-radius: 50%;
+    border: 10px solid gold;
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
+    transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
+    position: relative;
 }
 
-.segment-text {
+.label {
     position: absolute;
     top: 50%;
-    left: 85%;
+    left: 50%;
     transform-origin: center;
     font-size: 13px;
     font-weight: bold;
     white-space: nowrap;
-    pointer-events: none;
+}
+
+.pointer {
+    width: 0;
+    height: 0;
+    border-left: 22px solid transparent;
+    border-right: 22px solid transparent;
+    border-bottom: 45px solid gold;
+    margin: auto;
 }
 
 button {
@@ -75,20 +79,6 @@ button {
     border-radius: 30px;
     cursor: pointer;
     margin-top: 20px;
-    font-weight: bold;
-}
-
-button:disabled {
-    background: gray;
-}
-
-.pointer {
-    width: 0;
-    height: 0;
-    border-left: 22px solid transparent;
-    border-right: 22px solid transparent;
-    border-bottom: 45px solid gold;
-    margin: auto;
 }
 
 #winnerPopup {
@@ -104,14 +94,13 @@ button:disabled {
     border-radius: 20px;
     display: none;
     z-index: 999;
-    box-shadow: 0 0 40px rgba(0,0,0,0.6);
 }
 </style>
 </head>
 <body>
 
 <div class="logo">
-    <img src="logo.png" alt="Фабрика сна">
+    <img src="logo.png">
 </div>
 
 <h1>🎯 Лучший менеджер недели</h1>
@@ -119,7 +108,10 @@ button:disabled {
 <input type="text" id="managerName" placeholder="Введите имя победителя">
 
 <div class="pointer"></div>
-<div id="wheel"></div>
+
+<div id="wheel-container">
+    <div id="wheel"></div>
+</div>
 
 <button id="spinBtn" onclick="spin()">Крутить</button>
 
@@ -150,38 +142,35 @@ const colors = [
 ];
 
 const wheel = document.getElementById("wheel");
-const segmentAngle = 360 / prizes.length;
 const drumSound = document.getElementById("drumSound");
 
+const segmentAngle = 360 / prizes.length;
+
+/* Рисуем колесо */
+let gradient = "conic-gradient(";
+for (let i = 0; i < prizes.length; i++) {
+    gradient += colors[i] + " " + (i * segmentAngle) + "deg " + ((i + 1) * segmentAngle) + "deg";
+    if (i < prizes.length - 1) gradient += ",";
+}
+gradient += ")";
+wheel.style.background = gradient;
+
+/* Добавляем подписи */
 prizes.forEach((prize, i) => {
 
-    const segment = document.createElement("div");
-    segment.className = "segment";
-    segment.style.transform = `rotate(${i * segmentAngle}deg)`;
-    segment.style.clipPath = `polygon(50% 50%, 100% 0, 100% 100%)`;
-    segment.style.background = colors[i];
+    const label = document.createElement("div");
+    label.className = "label";
+    label.innerText = prize;
 
-    const text = document.createElement("div");
-    text.innerText = prize;
-    text.style.position = "absolute";
-    text.style.top = "50%";
-    text.style.left = "75%";
-    text.style.fontSize = "13px";
-    text.style.fontWeight = "bold";
-    text.style.whiteSpace = "nowrap";
-    text.style.pointerEvents = "none";
+    const angle = i * segmentAngle + segmentAngle / 2;
 
-    // Правильный индивидуальный угол для каждого сектора
-    const textAngle = i * segmentAngle + segmentAngle / 2;
-
-    text.style.transform = `
-        rotate(${textAngle}deg)
-        translate(-50%, -50%)
+    label.style.transform = `
+        rotate(${angle}deg)
+        translate(180px)
         rotate(90deg)
     `;
 
-    segment.appendChild(text);
-    wheel.appendChild(segment);
+    wheel.appendChild(label);
 });
 
 let currentRotation = 0;
