@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Фабрика сна — Колесо удачи</title>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    text-align: center;
+    background: linear-gradient(135deg, #0f1c3f, #1e3a8a);
+    color: white;
+    margin: 0;
+}
+
+.logo {
+    margin-top: 20px;
+}
+
+h1 {
+    margin-top: 10px;
+}
+
+input {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    margin-top: 10px;
+    text-align: center;
+}
+
+#wheel {
+    margin: 30px auto;
+    width: 520px;
+    height: 520px;
+    border-radius: 50%;
+    border: 10px solid gold;
+    position: relative;
+    overflow: hidden;
+    transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
+}
+
+.segment {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    transform-origin: 100% 100%;
+    text-align: right;
+    padding-right: 12px;
+    box-sizing: border-box;
+    font-size: 13px;
+    font-weight: bold;
+    color: white;
+}
+
+button {
+    padding: 15px 50px;
+    font-size: 18px;
+    background: gold;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+button:disabled {
+    background: gray;
+}
+
+.pointer {
+    width: 0;
+    height: 0;
+    border-left: 22px solid transparent;
+    border-right: 22px solid transparent;
+    border-bottom: 45px solid gold;
+    margin: auto;
+}
+
+#result {
+    margin-top: 25px;
+    font-size: 24px;
+    font-weight: bold;
+    min-height: 40px;
+}
+</style>
+</head>
+<body>
+
+<!-- ЛОГОТИП -->
+<div class="logo">
+    <!-- Замени src на свой логотип -->
+    <img src="https://via.placeholder.com/200x80?text=Фабрика+сна" height="80">
+</div>
+
+<h1>🎯 Лучший менеджер недели</h1>
+
+<input type="text" id="managerName" placeholder="Введите имя победителя">
+
+<div class="pointer"></div>
+<div id="wheel"></div>
+
+<button id="spinBtn" onclick="spin()">Крутить</button>
+
+<div id="result"></div>
+
+<audio id="drumSound" src="https://www.soundjay.com/misc/sounds/drum-roll-1.mp3"></audio>
+
+<script>
+const prizes = [
+"⭐ Супер-сектор: Уикенд-развлечение",
+"🐎 Конный тур",
+"💆 SPA-день",
+"Обед на неделю",
+"Такси на неделю",
+"Ужин в ресторане",
+"Боулинг + ужин",
+"Кино VIP + ужин",
+"Картинг",
+"Караоке-вечер",
+"Дополнительный выходной",
+"Тур «Кеттик»"
+];
+
+const colors = [
+"#1e40af","#2563eb","#1d4ed8","#3b82f6",
+"#1e3a8a","#1e40af","#2563eb","#1d4ed8",
+"#3b82f6","#1e3a8a","#1e40af","#0f172a"
+];
+
+const wheel = document.getElementById("wheel");
+const segmentAngle = 360 / prizes.length;
+const spinBtn = document.getElementById("spinBtn");
+const resultDiv = document.getElementById("result");
+const drumSound = document.getElementById("drumSound");
+
+prizes.forEach((prize, i) => {
+    const segment = document.createElement("div");
+    segment.className = "segment";
+    segment.style.background = colors[i];
+    segment.style.transform = `rotate(${i * segmentAngle}deg) skewY(${90 - segmentAngle}deg)`;
+    segment.innerHTML =
+        `<span style="display:block; transform: skewY(-${90 - segmentAngle}deg) rotate(${segmentAngle/2}deg);">
+        ${prize}</span>`;
+    wheel.appendChild(segment);
+});
+
+let currentRotation = 0;
+let hasSpun = false;
+
+function spin() {
+    if (hasSpun) return;
+
+    const name = document.getElementById("managerName").value;
+    if (!name) {
+        alert("Введите имя победителя!");
+        return;
+    }
+
+    hasSpun = true;
+    spinBtn.disabled = true;
+
+    drumSound.play();
+
+    const randomIndex = Math.floor(Math.random() * prizes.length);
+    const extraSpins = 5;
+    const finalAngle = (360 * extraSpins) +
+        (360 - (randomIndex * segmentAngle) - segmentAngle / 2);
+
+    currentRotation += finalAngle;
+    wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+    setTimeout(() => {
+        drumSound.pause();
+        resultDiv.innerHTML =
+            "🎉 " + name + " получает: " + prizes[randomIndex];
+
+        confetti({
+            particleCount: 200,
+            spread: 100,
+            origin: { y: 0.6 }
+        });
+
+    }, 4000);
+}
+</script>
+
+</body>
+</html>
