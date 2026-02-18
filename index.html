@@ -162,11 +162,18 @@ prizes.forEach((prize, i) => {
     segment.style.background = colors[i];
 
     const text = document.createElement("div");
-    text.className = "segment-text";
     text.innerText = prize;
+    text.style.position = "absolute";
+    text.style.top = "50%";
+    text.style.left = "75%";
+    text.style.fontSize = "13px";
+    text.style.fontWeight = "bold";
+    text.style.whiteSpace = "nowrap";
+    text.style.pointerEvents = "none";
 
-    // правильный угол текста
-    const textAngle = segmentAngle / 2;
+    // Правильный индивидуальный угол для каждого сектора
+    const textAngle = i * segmentAngle + segmentAngle / 2;
+
     text.style.transform = `
         rotate(${textAngle}deg)
         translate(-50%, -50%)
