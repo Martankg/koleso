@@ -12,10 +12,35 @@ body {
     background: linear-gradient(135deg, #0f1c3f, #1e3a8a);
     color: white;
     margin: 0;
+    transition: background 0.5s ease;
 }
 
+/* 🔹 Затемнение фона */
+body.dimmed::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 500;
+}
+
+/* 🔹 ЛОГО */
 .logo {
-    margin-top: 20px;
+    margin-top: 25px;
+}
+
+.logo img {
+    max-width: 260px;
+    height: auto;
+    filter: drop-shadow(0 0 25px rgba(255,255,255,0.35));
+    animation: floatLogo 4s ease-in-out infinite;
+}
+
+/* Плавание логотипа */
+@keyframes floatLogo {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0px); }
 }
 
 h1 {
@@ -41,6 +66,7 @@ input {
     overflow: hidden;
     transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
     box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
+    z-index: 1;
 }
 
 .segment {
@@ -80,19 +106,12 @@ button:disabled {
     margin: auto;
 }
 
-#result {
-    margin-top: 25px;
-    font-size: 22px;
-    font-weight: bold;
-    min-height: 40px;
-}
-
-/* Всплывающее окно */
+/* 🔹 Попап */
 #winnerPopup {
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) scale(0.5);
     background: gold;
     color: black;
     padding: 40px;
@@ -100,21 +119,22 @@ button:disabled {
     font-weight: bold;
     border-radius: 20px;
     display: none;
-    z-index: 999;
-    box-shadow: 0 0 40px rgba(0,0,0,0.6);
-    animation: pop 0.5s ease;
+    z-index: 1000;
+    box-shadow: 0 0 60px rgba(0,0,0,0.8);
+    transition: all 0.4s ease;
 }
 
-@keyframes pop {
-    from { transform: translate(-50%, -50%) scale(0.5); }
-    to { transform: translate(-50%, -50%) scale(1); }
+#winnerPopup.show {
+    display: block;
+    transform: translate(-50%, -50%) scale(1);
 }
 </style>
 </head>
+
 <body>
 
 <div class="logo">
-    <img src="https://via.placeholder.com/200x80?text=Фабрика+сна" height="80">
+    <img src="logo.png" alt="Фабрика сна">
 </div>
 
 <h1>🎯 Лучший менеджер недели</h1>
@@ -126,7 +146,6 @@ button:disabled {
 
 <button id="spinBtn" onclick="spin()">Крутить</button>
 
-<div id="result"></div>
 <div id="winnerPopup"></div>
 
 <audio id="drumSound" src="https://www.soundjay.com/misc/sounds/drum-roll-1.mp3"></audio>
@@ -155,8 +174,6 @@ const colors = [
 
 const wheel = document.getElementById("wheel");
 const segmentAngle = 360 / prizes.length;
-const spinBtn = document.getElementById("spinBtn");
-const resultDiv = document.getElementById("result");
 const drumSound = document.getElementById("drumSound");
 
 prizes.forEach((prize, i) => {
@@ -174,6 +191,7 @@ let currentRotation = 0;
 let hasSpun = false;
 
 function spin() {
+
     if (hasSpun) return;
 
     const name = document.getElementById("managerName").value;
@@ -183,7 +201,7 @@ function spin() {
     }
 
     hasSpun = true;
-    spinBtn.disabled = true;
+    document.getElementById("spinBtn").disabled = true;
 
     drumSound.play();
 
@@ -196,19 +214,19 @@ function spin() {
     wheel.style.transform = `rotate(${currentRotation}deg)`;
 
     setTimeout(() => {
+
         drumSound.pause();
 
-        const winText = name + " получает: " + prizes[randomIndex];
-
-        resultDiv.innerHTML = "🎉 " + winText;
+        // 🔹 Затемняем фон
+        document.body.classList.add("dimmed");
 
         const popup = document.getElementById("winnerPopup");
-        popup.innerHTML = "🎉 " + winText;
-        popup.style.display = "block";
+        popup.innerHTML = "🎉 " + name + " получает:<br><br>" + prizes[randomIndex];
+        popup.classList.add("show");
 
         confetti({
-            particleCount: 250,
-            spread: 120,
+            particleCount: 300,
+            spread: 140,
             origin: { y: 0.6 }
         });
 
