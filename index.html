@@ -156,21 +156,26 @@ prizes.forEach((prize, i) => {
 
     const segment = document.createElement("div");
     segment.className = "segment";
-    segment.style.background = colors[i];
-    segment.style.clipPath = `polygon(50% 50%, 100% 0, 100% 100%)`;
+    segment.style.position = "absolute";
+    segment.style.width = "100%";
+    segment.style.height = "100%";
+    segment.style.transformOrigin = "50% 50%";
     segment.style.transform = `rotate(${i * segmentAngle}deg)`;
+    segment.style.clipPath = `polygon(50% 50%, 100% 0, 100% 100%)`;
+    segment.style.background = colors[i];
 
     const text = document.createElement("div");
     text.innerText = prize;
 
     text.style.position = "absolute";
-    text.style.left = "65%";
     text.style.top = "50%";
-    text.style.transform = `rotate(${segmentAngle/2}deg) translate(-50%, -50%)`;
+    text.style.left = "75%";   /* Двигаем ближе к краю */
+    text.style.transform = `rotate(${segmentAngle / 2}deg) translate(-50%, -50%)`;
     text.style.transformOrigin = "left center";
-    text.style.fontSize = "14px";
+    text.style.fontSize = "13px";
     text.style.fontWeight = "bold";
     text.style.whiteSpace = "nowrap";
+    text.style.pointerEvents = "none";
 
     segment.appendChild(text);
     wheel.appendChild(segment);
@@ -205,7 +210,6 @@ function spin() {
         drumSound.pause();
 
         const winText = name + " получает: " + prizes[randomIndex];
-
         resultDiv.innerHTML = "🎉 " + winText;
 
         const popup = document.getElementById("winnerPopup");
@@ -221,6 +225,7 @@ function spin() {
     }, 4000);
 }
 </script>
+
 
 </body>
 </html>
