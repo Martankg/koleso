@@ -15,11 +15,17 @@ body {
 }
 
 .logo {
-    margin-top: 20px;
+    margin-top: 25px;
+}
+
+.logo img {
+    max-width: 280px;
+    height: auto;
 }
 
 h1 {
-    margin-top: 10px;
+    margin-top: 15px;
+    font-size: 28px;
 }
 
 input {
@@ -82,18 +88,38 @@ button:disabled {
 
 #result {
     margin-top: 25px;
-    font-size: 24px;
+    font-size: 22px;
     font-weight: bold;
     min-height: 40px;
+}
+
+#winnerPopup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: gold;
+    color: black;
+    padding: 40px;
+    font-size: 28px;
+    font-weight: bold;
+    border-radius: 20px;
+    display: none;
+    z-index: 999;
+    box-shadow: 0 0 40px rgba(0,0,0,0.6);
+    animation: pop 0.5s ease;
+}
+
+@keyframes pop {
+    from { transform: translate(-50%, -50%) scale(0.5); }
+    to { transform: translate(-50%, -50%) scale(1); }
 }
 </style>
 </head>
 <body>
 
-<!-- ЛОГОТИП -->
 <div class="logo">
-    <!-- Замени src на свой логотип -->
-    <img src="https://via.placeholder.com/200x80?text=Фабрика+сна" height="80">
+    <img src="logo.png" alt="Фабрика сна">
 </div>
 
 <h1>🎯 Лучший менеджер недели</h1>
@@ -106,6 +132,7 @@ button:disabled {
 <button id="spinBtn" onclick="spin()">Крутить</button>
 
 <div id="result"></div>
+<div id="winnerPopup"></div>
 
 <audio id="drumSound" src="https://www.soundjay.com/misc/sounds/drum-roll-1.mp3"></audio>
 
@@ -175,12 +202,18 @@ function spin() {
 
     setTimeout(() => {
         drumSound.pause();
-        resultDiv.innerHTML =
-            "🎉 " + name + " получает: " + prizes[randomIndex];
+
+        const winText = name + " получает: " + prizes[randomIndex];
+
+        resultDiv.innerHTML = "🎉 " + winText;
+
+        const popup = document.getElementById("winnerPopup");
+        popup.innerHTML = "🎉 " + winText;
+        popup.style.display = "block";
 
         confetti({
-            particleCount: 200,
-            spread: 100,
+            particleCount: 250,
+            spread: 120,
             origin: { y: 0.6 }
         });
 
@@ -190,3 +223,4 @@ function spin() {
 
 </body>
 </html>
+
