@@ -57,9 +57,14 @@ input {
     top: 50%;
     left: 50%;
     transform-origin: center;
-    font-size: 13px;
+    font-size: 11px;              /* меньше */
     font-weight: bold;
-    white-space: nowrap;
+    width: 90px;                   /* ограничиваем ширину */
+    text-align: center;
+    white-space: normal;           /* разрешаем перенос */
+    line-height: 1.1;
+    writing-mode: vertical-rl;     /* вертикально */
+    text-orientation: mixed;
 }
 
 .pointer {
@@ -164,11 +169,11 @@ prizes.forEach((prize, i) => {
 
     const angle = i * segmentAngle + segmentAngle / 2;
 
-   label.style.transform = `
+ label.style.transform = `
     rotate(${angle}deg)
-    translate(210px)
-    rotate(90deg)
+    translate(185px)
 `;
+
 
     wheel.appendChild(label);
 });
